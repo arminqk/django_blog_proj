@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , reverse , redirect
 from .models import Post
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
@@ -16,21 +16,24 @@ def post_detail_view(request,pk):
 
 
 def post_create_view(request):
-    if request.method == 'POST' :
-        pass
+    if request.method == 'POST':
+        form = NewPostForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+            return redirect('posts_list')
     else:
         form = NewPostForm()
     return render(request, 'blog/post_create.html', context={'form':form})
 
-    '''
-    if request.method == 'POST':
-        post_title = request.POST.get('title')
-        post_text = request.POST.get('text')
-        user = User.objects.all()[0]
-        Post.objects.create(title=post_title , text= post_text ,author=user , status='pub')
-    else:
-        print('get req!')
-        '''
+def post_update_view(request , pk):
+    post = get_object_or_404(Post,pk=pk)
+    form = NewPostForm(request.POST or None , instance=post)
+    if form.is_valid():
+        form.save()
+
+    return render(request ,'blog/post_create.html' , context={'form':form})
+
 
 
 
