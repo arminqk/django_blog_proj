@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.shortcuts import reverse
 class Post(models.Model):
     STATUS_CHOICES = (
         ('pub', 'Published'),
@@ -16,5 +16,7 @@ class Post(models.Model):
         return self.title
 # ke chi neshun bde !
 
+    def get_absolute_url(self):
+        return reverse('posts_detail' , args=[self.id])
 
 

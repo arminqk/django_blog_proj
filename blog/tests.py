@@ -25,6 +25,14 @@ class BlogPostTest(TestCase):
 
 
 #UNIT TEST
+    def test_post_model_str(self):
+        post = self.post1
+        self.assertEqual(str(post) , post.title)
+
+    def test_post_detail(self):
+        self.assertEqual(self.post1.title , 'post title')
+        self.assertEqual(self.post1.text, 'test text ')
+
 
     def test_post_list_url(self):
         response = self.client.get('/blog/')
@@ -60,5 +68,29 @@ class BlogPostTest(TestCase):
         response = self.client.get(reverse('posts_list'))
         self.assertContains(response, self.post1.title)
         self.assertNotContains(response, self.post2.title)
+
+
+    def post_create_view(self):
+        response = self.client.post(reverse('post_create') , {
+            'title' : 'post titleee',
+            'text' : 'posttt text',
+            'status' : 'pub',
+            'author' : self.user.id,
+        })
+        self.assertEqual(response.status_code , 302)
+
+    def test_post_update_view(self):
+        response = self.client.post(reverse('post_update' , args =[self.post2.id]) ,{
+            'title': 'post update',
+            'text': 'update text',
+            'status':'pub',
+            'author' : self.post2.author.id
+        })
+        self.assertEqual(Post.objects.last().title ,'post update')
+        self.assertEqual(Post.objects.last().text, 'update text')
+
+    def test_post_delete_view(self):
+        response = self.client.post(reverse('post_delete', args=[self.post2.id]))
+        self.assertEqual(response.status_code , 302)
 
 
